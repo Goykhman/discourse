@@ -7,3 +7,4 @@ numbox.egg-info/
 main
 *.o
 *.ll
+*.dylib

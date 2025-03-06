@@ -1,4 +1,4 @@
-from numba import carray, cfunc
+from numba import carray, cfunc, njit
 from numba.core.types import CPointer, float64, void
 from numpy import float64 as float64_t
 
@@ -24,9 +24,23 @@ def calculation(in_arr_p, out_arr_p, param):
         arr2[i] = arr[i] + param
 
 
+another_calculation_signature = float64(float64)
+
+
+@njit(another_calculation_signature)
+def another_calculation(param):
+    return 3.141 * param ** 2
+
+
 if __name__ == '__main__':
     calculation_llvm = calculation.inspect_llvm()
     calculation_llvm = calculation_llvm.replace('cfunc.', 'cfunc')
 
     with open('calculation.ll', 'w') as f:
         print(calculation_llvm, file=f)
+
+    another_calculation_llvm = next(iter(another_calculation.inspect_llvm().values()))
+    another_calculation_llvm = another_calculation_llvm.replace('cfunc.', 'cfunc')
+
+    with open('another_calculation.ll', 'w') as f:
+        print(another_calculation_llvm, file=f)
